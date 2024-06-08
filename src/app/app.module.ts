@@ -10,6 +10,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { TestComponentComponent } from './test-component/test-component.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'; // Import HttpClientModule
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     NgxExcelViewerModule,
     HttpClientModule,
     BrowserAnimationsModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatIconModule
   ],
   providers: [],
   bootstrap: [AppComponent]

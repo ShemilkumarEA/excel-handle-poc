@@ -1,21 +1,40 @@
-<h1 style="text-align: center; text-decoration: underline;color: blue;">Excel handling Angular App</h1>
-<div class="input-container" style="margin-bottom: 1rem;">
-    <input type="file" (change)="onFileChange($event)">
-</div>
+<div class="page-container">
+    <h1 class="project-heading flex justify-center">
+        <span
+            class="flex justify-center bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400">
+            Audit Handling App
+        </span>
+    </h1>
 
-<button *ngIf="!isEditing" (click)="isEditing = true">Edit</button>
-<button *ngIf="isEditing" (click)="handleSave()">Save</button>
-<button *ngIf="isEditing" (click)="handleCancel()">Cancel</button>
-<button (click)="handleDownload()">Download</button>
+    <div class="excel-buttons">
+        <div *ngIf="excelLoaded" class="flex items-center justify-end gap-2">
+            <button (click)="isEditing = false" class="mode-selection" [ngClass]="!isEditing ? 'active-mode' : ''">
+                Comment Mode
+            </button>
+            <button (click)="isEditing = true" class="mode-selection" [ngClass]="isEditing ? 'active-mode' : ''">
+                Edit Mode
+            </button>
+            <button *ngIf="isEditing" (click)="handleSave()" class="custom-button save-button">Save</button>
+        </div>
 
-<div style="display: flex; justify-content: center;">
-    <div class="viewer">
-        <!-- <ngx-excel-viewer [data]="data" [editable]="true" id="source" saveDataOutput="edited-only"
-            (onDataSave)="onSave($event)" [sheetNames]="['Sheet1']">
-        </ngx-excel-viewer> -->
+        <div class="input-container flex gap-2 items-end justify-end">
+            <input type="file" (change)="onFileChange($event)" id="fileInput" class="file-input">
+            <label for="fileInput" class="file-input-label">Choose a file</label>
+            <button (click)="handleDownload()" class="custom-button download-button flex items-center">
+                <span>Download</span>
+            </button>
+        </div>
+    </div>
 
-        <ngx-excel-viewer *ngIf="isFetched" [data]="data" [editable]="isEditing" id="Source" saveDataOutput="complete"
-            (onDataSave)="onSave($event)" [sheetNames]="sheetNames" [events]="eventEmitter"></ngx-excel-viewer>
+    <div class="viewer-container" *ngIf="excelLoaded">
+        <div class="viewer">
+            <ngx-excel-viewer *ngIf="isFetched" [data]="data" [editable]="isEditing" id="Source"
+                saveDataOutput="complete" (onDataSave)="onSave($event)" [sheetNames]="sheetNames"
+                [events]="eventEmitter"></ngx-excel-viewer>
+        </div>
+    </div>
+
+    <div *ngIf="!excelLoaded" class="viewer placeholder-viewer">
+        Please upload the excel...
     </div>
 </div>
-<!-- (onScrollEnd)="onScroll($event)" -->

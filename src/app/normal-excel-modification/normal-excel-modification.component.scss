@@ -1,4 +1,132 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+.page-container {
+  padding: 0 5rem;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.viewer-container {
+  display: flex;
+  justify-content: center;
+}
+
 .viewer {
-  width: 90%;
-  height: 85vh;
+  width: 100%;
+  height: 80vh;
+}
+
+.placeholder-viewer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  border: 3px dashed lightgray;
+}
+
+.project-heading {
+  font-weight: 500;
+  font-size: 2rem;
+  margin-top: 1rem;
+}
+
+.excel-buttons {
+  display: flex;
+  justify-content: space-between; /* Adjust as needed */
+  margin-bottom: 1rem;
+}
+
+.input-container {
+  position: relative;
+  margin-bottom: 1rem;
+  margin-left: auto; /* Push the input container to the right */
+}
+
+.file-input {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.file-input-label {
+  display: flex;
+  align-items: center;
+  padding: 4px 16px;
+  border: solid 2px #3f51b5;
+  color: #3f51b5;
+  font-weight: 500;
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.file-input-label:hover {
+  background-color: #303f9f;
+}
+
+.file-input-label:active {
+  background-color: #283593;
+}
+
+.custom-button {
+  display: inline-block;
+  padding: 6px 16px;
+  font-weight: 500;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.custom-button:hover {
+  transform: scale(1.05);
+}
+
+.custom-button:active {
+  transform: scale(1);
+}
+
+.custom-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.custom-button.save-button {
+  background-color: #4caf50;
+  color: white;
+}
+
+.custom-button.save-button:hover {
+  background-color: #388e3c;
+}
+
+.custom-button.download-button {
+  background-color: #f59e0b;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  z-index: 999;
+}
+
+.custom-button.download-button:hover {
+  background-color: #fb8c00;
+}
+
+.mode-selection {
+  padding: 6px 8px;
+  font-weight: 500;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+.active-mode {
+  border-bottom: 3px solid blue;
 }

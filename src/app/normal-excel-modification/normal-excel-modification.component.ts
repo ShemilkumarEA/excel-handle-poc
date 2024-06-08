@@ -15,12 +15,13 @@ export class NormalExcelModificationComponent {
   stopFetching = false;
   eventEmitter = new BehaviorSubject<any>({});
   isEditing = false;
+  excelLoaded: boolean = false;
   sheetNames: string[] = ['Invoice Info'];
 
   constructor(public httpClient: HttpClient) { }
 
   ngOnInit(): void {
-    this.getData();
+    // this.getData();
   }
 
   getData(): void {
@@ -63,9 +64,10 @@ export class NormalExcelModificationComponent {
 
       // Convert the sheet to JSON
       const data = <any[][]>XLSX.utils.sheet_to_json(ws, { header: 1 });
+      this.data = [];
       this.data['Invoice Info'] = data;
-      console.log(this.data);
       this.isFetched = true;
+      this.excelLoaded = true
 
     };
     reader.readAsBinaryString(target.files[0]);
