@@ -1,0 +1,21 @@
+<h1 style="text-align: center; text-decoration: underline;color: blue;">Excel handling Angular App</h1>
+<div class="input-container" style="margin-bottom: 1rem;">
+    <input type="file" (change)="onFileChange($event)">
+</div>
+
+<button *ngIf="!isEditing" (click)="isEditing = true">Edit</button>
+<button *ngIf="isEditing" (click)="handleSave()">Save</button>
+<button *ngIf="isEditing" (click)="handleCancel()">Cancel</button>
+<button (click)="handleDownload()">Download</button>
+
+<div style="display: flex; justify-content: center;">
+    <div class="viewer">
+        <!-- <ngx-excel-viewer [data]="data" [editable]="true" id="source" saveDataOutput="edited-only"
+            (onDataSave)="onSave($event)" [sheetNames]="['Sheet1']">
+        </ngx-excel-viewer> -->
+
+        <ngx-excel-viewer *ngIf="isFetched" [data]="data" [editable]="isEditing" id="Source" saveDataOutput="complete"
+            (onDataSave)="onSave($event)" [sheetNames]="sheetNames" [events]="eventEmitter"></ngx-excel-viewer>
+    </div>
+</div>
+<!-- (onScrollEnd)="onScroll($event)" -->

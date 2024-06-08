@@ -1,0 +1,25 @@
+.input-conatiner {
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn {
+  padding: 8px 16px;
+  background-color: #22c55e;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+
+  &:hover {
+    scale: 0.95;
+  }
+}
+
+input {
+  height: 24px;
+  width: 800px;
+}
