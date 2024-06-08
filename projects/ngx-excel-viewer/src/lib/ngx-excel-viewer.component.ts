@@ -1,5 +1,7 @@
 import { Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { BehaviorSubject } from 'rxjs';
+import { CommentDialogComponent } from './dialog/comment-dialog.component';
 
 @Component({
   selector: 'ngx-excel-viewer',
@@ -27,7 +29,7 @@ export class NgxExcelViewerComponent implements OnInit, OnChanges {
   private renderedPages = 1;
   private lastScrollTop = 0;
   public loading = false;
-  constructor() { }
+  constructor(private dialog: MatDialog) { }
 
   ngOnInit(): void {
     if (this.data != null) {
@@ -202,13 +204,30 @@ export class NgxExcelViewerComponent implements OnInit, OnChanges {
   comments: { comment: string | null, id: string, xPosition: number, yPosition: number }[] = []
 
   onDoubleClick(event: any, y: number, x: number) {
+
+    // let userComment = prompt('Type here');
+    // if (userComment)
+    //   this.comments.push({ comment: userComment, id: "AAA", xPosition: x, yPosition: y })
+    // // this.run();
+
     if (this.editable) return;
-    let userComment = prompt('Type here');
-    if (userComment)
-      this.comments.push({ comment: userComment, id: "AAA", xPosition: x, yPosition: y })
-    console.log(this.comments);
-    // this.run();
+
+    const commetedCell = this.comments.find(userComment => userComment.yPosition === y && userComment.xPosition === x);
+    console.log(commetedCell);
+
+
+    const dialogRef = this.dialog.open(CommentDialogComponent, {
+      width: '500px',
+      data: { comment: commetedCell?.comment }
+    });
+
+    dialogRef.afterClosed().subscribe(comment => {
+      if (comment) {
+        this.comments.push({ comment, id: "AAA", xPosition: x, yPosition: y })
+      }
+    });
   }
+
 
   isCommentedCell(i: number, j: number) {
     const commetedCell = this.comments.find(userComment => userComment.yPosition === i && userComment.xPosition === j);
