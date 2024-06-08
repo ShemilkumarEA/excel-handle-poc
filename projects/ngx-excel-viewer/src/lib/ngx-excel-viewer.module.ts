@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { NgxExcelViewerComponent } from './ngx-excel-viewer.component';
 import { CommonModule } from '@angular/common';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 
 
@@ -10,6 +11,7 @@ import { CommonModule } from '@angular/common';
   ],
   imports: [
     CommonModule,
+    MatTooltipModule
   ],
   exports: [
     NgxExcelViewerComponent

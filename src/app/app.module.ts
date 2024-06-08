@@ -7,7 +7,9 @@ import { NgxExcelViewerModule } from '../../projects/ngx-excel-viewer/src/public
 import { MicrosoftExcelModificationComponent } from './microsoft-excel-modification/microsoft-excel-modification.component';
 import { NormalExcelModificationComponent } from './normal-excel-modification/normal-excel-modification.component';
 import { HttpClientModule } from '@angular/common/http';
-import { TestComponentComponent } from './test-component/test-component.component'; // Import HttpClientModule
+import { TestComponentComponent } from './test-component/test-component.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations'; // Import HttpClientModule
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [
@@ -20,7 +22,9 @@ import { TestComponentComponent } from './test-component/test-component.componen
     BrowserModule,
     AppRoutingModule,
     NgxExcelViewerModule,
-    HttpClientModule
+    HttpClientModule,
+    BrowserAnimationsModule,
+    MatTooltipModule
   ],
   providers: [],
   bootstrap: [AppComponent]

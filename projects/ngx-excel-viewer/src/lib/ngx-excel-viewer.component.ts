@@ -217,10 +217,12 @@ export class NgxExcelViewerComponent implements OnInit, OnChanges {
   }
 
 
-  showComment(event: any, i: number, j: number) {
+  showComment(i: number, j: number): string {
     const commetedCell = this.comments.find(userComment => userComment.yPosition === i && userComment.xPosition === j);
-    if (commetedCell) {
-      alert(commetedCell.comment)
+    if (commetedCell && commetedCell.comment) {
+      return commetedCell.comment;
     }
+
+    return ''
   }
 }

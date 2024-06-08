@@ -14,7 +14,7 @@
                         <td *ngFor="let cell of data; let j=index"
                             [ngClass]="{'main-selected': selectedCellIndices[0] == i && selectedCellIndices[1] == j}"
                             [class]="isCommentedCell(i,j) ? 'commentedCellColor': ''" (click)="selectCell(i,j)"
-                            (dblclick)="onDoubleClick($event,i,j)" (mouseover)="showComment($event,i,j)">
+                            (dblclick)="onDoubleClick($event,i,j)" [matTooltip]="showComment(i,j)">
                             <div [id]="'input-'+i+'-'+j" (blur)="onDataChanges($event, i, j)" (focus)="selectCell(i,j)"
                                 [contentEditable]="editable" [innerHTML]="cell['value']"></div>
                         </td>
