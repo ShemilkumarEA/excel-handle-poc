@@ -16,7 +16,8 @@ export class NormalExcelModificationComponent {
   eventEmitter = new BehaviorSubject<any>({});
   isEditing = false;
   excelLoaded: boolean = false;
-  sheetNames: string[] = ['Invoice Info'];
+  sheetNames: string[] = ['Sheet_1'];
+  comments: any;
 
   constructor(public httpClient: HttpClient) { }
 
@@ -36,7 +37,7 @@ export class NormalExcelModificationComponent {
             sheets.push(r['brand'])
           }
         }
-        this.data['Invoice Info'] = temp;
+        this.data['Sheet_1'] = temp;
         // this.sheetNames = sheets;
         console.log(this.data);
 
@@ -45,8 +46,8 @@ export class NormalExcelModificationComponent {
   }
 
   onSave(event: any) {
-    console.log(event);
-    this.data['Invoice Info'] = event.data;
+    this.data['Sheet_1'] = event.data;
+    this.comments = event.comments;
   }
 
   onFileChange(event: any) {
@@ -65,27 +66,67 @@ export class NormalExcelModificationComponent {
       // Convert the sheet to JSON
       const data = <any[][]>XLSX.utils.sheet_to_json(ws, { header: 1 });
       this.data = [];
-      this.data['Invoice Info'] = data;
+      this.data['Sheet_1'] = data;
       this.isFetched = true;
       this.excelLoaded = true
 
+      // Extract comments
+      // const comments = this.extractComments(wb);
+      // this.comments = comments;
+      // console.log(this.comments);
     };
     reader.readAsBinaryString(target.files[0]);
   }
 
-  onScroll(event: any): void {
-    if (this.stopFetching) return;
-    this.httpClient.get('https://random-data-api.com/api/appliance/random_appliance?size=10')
-      .subscribe((res: any) => {
-        let temp = this.data['Invoice Info'];
-        for (let r of res) {
-          temp.push(Object.values(r));
-        }
-        this.data['Invoice Info'] = temp;
-        this.eventEmitter.next({ id: "Source", type: "new_data" });
-        this.stopFetching = true;
-      })
+  extractComments(wb: XLSX.WorkBook): any {
+    const allData = wb.Sheets[wb.SheetNames[0]];
+    const comments: any = {};
+
+    for (const [key, value] of Object.entries(allData)) {
+      // console.log(key, value);
+      if (value['c']) {
+        console.log(key, value['c'][0].t);
+      }
+    }
+
+    // for (let key in allData) {
+    //   if (allData.hasOwnProperty(key)) {
+    //     // console.log(key, allData[key]);
+    //     if (allData[key].hasOwnProperty('c')) {
+    //       console.log(key, allData[key].c[0].t);
+    //     }
+    //   }
+    // }
+
+    // wb.SheetNames.forEach(sheetName => {
+    //   const ws = wb.Sheets[sheetName];
+    //   comments[sheetName] = {};
+    //   if (ws && ws['!comments']) {
+    //     ws['!comments'].forEach((comment: any) => {
+    //       const cellAddress = comment.ref;
+    //       if (!comments[sheetName][cellAddress]) {
+    //         comments[sheetName][cellAddress] = [];
+    //       }
+    //       comments[sheetName][cellAddress].push(comment.t);
+    //     });
+    //   }
+    // });
+    return comments;
   }
+
+  // onScroll(event: any): void {
+  //   if (this.stopFetching) return;
+  //   this.httpClient.get('https://random-data-api.com/api/appliance/random_appliance?size=10')
+  //     .subscribe((res: any) => {
+  //       let temp = this.data['Sheet_1'];
+  //       for (let r of res) {
+  //         temp.push(Object.values(r));
+  //       }
+  //       this.data['Sheet_1'] = temp;
+  //       this.eventEmitter.next({ id: "Source", type: "new_data" });
+  //       this.stopFetching = true;
+  //     })
+  // }
 
   handleSave() {
     this.eventEmitter.next({ id: 'Source', type: 'save' });
@@ -93,15 +134,50 @@ export class NormalExcelModificationComponent {
   }
 
   handleCancel() {
-    this.eventEmitter.next({ id: 'Source', type: 'cancel' });
+    // this.eventEmitter.next({ id: 'Source', type: 'cancel' });
     this.isEditing = false;
   }
 
+  handleUploadFile() { }
+
   handleDownload() {
-    const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(this.data['Invoice Info']);
+
+    if (!this.data['Sheet_1']) return;
+
+    this.eventEmitter.next({ id: 'Source', type: 'save' });
+    const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(this.data['Sheet_1']);
+
+    if (ws) {
+
+      for (let comment of this.comments) {
+        const cellAddress = this.getColumnLetter(comment.xPosition) + (comment.yPosition + 1); // Convert to 1-based index for row
+
+        if (!ws[cellAddress]) ws[cellAddress] = {}; // Create cell if it does not exist
+        if (!ws[cellAddress].c) ws[cellAddress].c = []; // Initialize comments array if it does not exist
+
+        ws[cellAddress].c.push({
+          a: "Shemil", // Author
+          t: comment.comment // Text of the comment
+        });
+      }
+      // ws.A1.c.push({a:"SheetJS", t:"I'm a little comment, short and stout!"});
+    }
+
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Invoice Info');
-    XLSX.writeFile(wb, 'Invoice_Info.xlsx');
+    XLSX.utils.book_append_sheet(wb, ws, 'Sheet_1');
+    XLSX.writeFile(wb, 'example.xlsx');
   }
+
+  onDownload(event: any) { }
+
+  getColumnLetter(colIndex: number) {
+    let letter = '';
+    let tempIndex = colIndex;
+    while (tempIndex >= 0) {
+      letter = String.fromCharCode((tempIndex % 26) + 65) + letter;
+      tempIndex = Math.floor(tempIndex / 26) - 1;
+    }
+    return letter;
+  };
 
 }

@@ -49,7 +49,7 @@ export class NgxExcelViewerComponent implements OnInit, OnChanges {
             if (this.saveDataOutput == "complete") {
               console.log(this.sheetData);
               this.onDataSave.emit({
-                id: this.id, sheet: this.currentSheetName, data: this.sheetData.map((row: any) => {
+                id: this.id, sheet: this.currentSheetName, comments: this.comments, data: this.sheetData.map((row: any) => {
                   let temp: string[] = [];
                   row.map((element: { value: string }) => temp.push(element.value));
                   return temp;
@@ -77,6 +77,7 @@ export class NgxExcelViewerComponent implements OnInit, OnChanges {
   }
 
   run() {
+    this.comments = [];
     this.loading = true;
     setTimeout(() => {
       this.calculateMaxColumns();

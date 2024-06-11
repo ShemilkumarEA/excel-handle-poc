@@ -82,6 +82,7 @@
   border: none;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
+  z-index: 999;
 }
 
 .custom-button:hover {
@@ -106,13 +107,21 @@
   background-color: #388e3c;
 }
 
+.custom-button.cancel-button {
+  background-color: #ef4444;
+  color: white;
+}
+
+.custom-button.cancel-button:hover {
+  background-color: #ef4444;
+}
+
 .custom-button.download-button {
   background-color: #f59e0b;
   color: white;
   display: flex;
   align-items: center;
   gap: 4px;
-  z-index: 999;
 }
 
 .custom-button.download-button:hover {
