@@ -16,7 +16,7 @@
                             [class]="isCommentedCell(i,j) ? 'commentedCellColor': ''" (click)="selectCell(i,j)"
                             (dblclick)="onDoubleClick($event,i,j)" [matTooltip]="showComment(i,j)">
                             <div [id]="'input-'+i+'-'+j" (blur)="onDataChanges($event, i, j)" (focus)="selectCell(i,j)"
-                                [contentEditable]="editable" [innerHTML]="cell['value']"></div>
+                                [contentEditable]="editable" [innerHTML]="cell?.value ?? ''"></div>
                         </td>
                         <!-- [ngClass]="{'commentedCellColor': isCommentedCell(i,j)}" -->
                     </tr>

@@ -3,6 +3,14 @@ import { MatDialog } from '@angular/material/dialog';
 import { BehaviorSubject } from 'rxjs';
 import { CommentDialogComponent } from './dialog/comment-dialog.component';
 
+interface Comment {
+  comment: string | null,
+  id: string,
+  xPosition: number,
+  yPosition: number
+}
+
+
 @Component({
   selector: 'ngx-excel-viewer',
   templateUrl: 'ngx-excel-viewer.component.html',
@@ -29,6 +37,9 @@ export class NgxExcelViewerComponent implements OnInit, OnChanges {
   private renderedPages = 1;
   private lastScrollTop = 0;
   public loading = false;
+
+  comments: { [key: string]: Comment[] } = {};
+
   constructor(private dialog: MatDialog) { }
 
   ngOnInit(): void {
@@ -46,12 +57,14 @@ export class NgxExcelViewerComponent implements OnInit, OnChanges {
             this.isSheetDataChanged = false;
             this.modifiedRows = [];
           } else if (event.type == "save") {
+            this.isSheetDataChanged = true;
             if (this.saveDataOutput == "complete") {
-              console.log(this.sheetData);
               this.onDataSave.emit({
                 id: this.id, sheet: this.currentSheetName, comments: this.comments, data: this.sheetData.map((row: any) => {
                   let temp: string[] = [];
-                  row.map((element: { value: string }) => temp.push(element.value));
+                  row.map((element: { value: string }) => {
+                    if (element) temp.push(element.value)
+                  });
                   return temp;
                   // row['value']
                 })
@@ -77,7 +90,7 @@ export class NgxExcelViewerComponent implements OnInit, OnChanges {
   }
 
   run() {
-    this.comments = [];
+    // this.comments = {};
     this.loading = true;
     setTimeout(() => {
       this.calculateMaxColumns();
@@ -133,10 +146,10 @@ export class NgxExcelViewerComponent implements OnInit, OnChanges {
   }
 
   setSelectedSheetName(sheet: string) {
-    if (this.isSheetDataChanged) {
-      alert("Save sheet before switching");
-      return;
-    }
+    // if (this.isSheetDataChanged) {
+    //   alert("Save sheet before switching");
+    //   return;
+    // }
     this.currentSheetName = sheet;
     this.run();
   }
@@ -202,8 +215,6 @@ export class NgxExcelViewerComponent implements OnInit, OnChanges {
     }
   }
 
-  comments: { comment: string | null, id: string, xPosition: number, yPosition: number }[] = []
-
   onDoubleClick(event: any, y: number, x: number) {
 
     // let userComment = prompt('Type here');
@@ -213,9 +224,10 @@ export class NgxExcelViewerComponent implements OnInit, OnChanges {
 
     if (this.editable) return;
 
-    const commetedCell = this.comments.find(userComment => userComment.yPosition === y && userComment.xPosition === x);
-    console.log(commetedCell);
+    let commetedCell;
 
+    if (this.comments[this.currentSheetName])
+      commetedCell = this.comments[this.currentSheetName].find(userComment => userComment.yPosition === y && userComment.xPosition === x);
 
     const dialogRef = this.dialog.open(CommentDialogComponent, {
       width: '500px',
@@ -224,21 +236,24 @@ export class NgxExcelViewerComponent implements OnInit, OnChanges {
 
     dialogRef.afterClosed().subscribe(comment => {
       if (comment) {
-        this.comments.push({ comment, id: "AAA", xPosition: x, yPosition: y })
+        if (!this.comments[this.currentSheetName]) this.comments[this.currentSheetName] = []
+        this.comments[this.currentSheetName].push({ comment, id: "AAA", xPosition: x, yPosition: y })
       }
     });
   }
 
 
   isCommentedCell(i: number, j: number) {
-    const commetedCell = this.comments.find(userComment => userComment.yPosition === i && userComment.xPosition === j);
+    if (!this.comments[this.currentSheetName]) return false;
+    const commetedCell = this.comments[this.currentSheetName].find(userComment => userComment.yPosition === i && userComment.xPosition === j);
     if (commetedCell) return true;
     return false;
   }
 
 
   showComment(i: number, j: number): string {
-    const commetedCell = this.comments.find(userComment => userComment.yPosition === i && userComment.xPosition === j);
+    if (!this.comments[this.currentSheetName]) return '';
+    const commetedCell = this.comments[this.currentSheetName].find(userComment => userComment.yPosition === i && userComment.xPosition === j);
     if (commetedCell && commetedCell.comment) {
       return commetedCell.comment;
     }

@@ -16,7 +16,7 @@ export class NormalExcelModificationComponent {
   eventEmitter = new BehaviorSubject<any>({});
   isEditing = false;
   excelLoaded: boolean = false;
-  sheetNames: string[] = ['Sheet_1'];
+  sheetNames: string[] = [];
   comments: any;
 
   constructor(public httpClient: HttpClient) { }
@@ -25,28 +25,29 @@ export class NormalExcelModificationComponent {
     // this.getData();
   }
 
-  getData(): void {
-    this.httpClient.get('https://random-data-api.com/api/appliance/random_appliance?size=10')
-      .subscribe((res: any) => {
-        let temp: any[] = [];
-        let sheets: string[] = [];
-        temp.push(Object.keys(res[0]));
-        for (let r of res) {
-          temp.push(Object.values(r));
-          if (!sheets.includes(r['brand'])) {
-            sheets.push(r['brand'])
-          }
-        }
-        this.data['Sheet_1'] = temp;
-        // this.sheetNames = sheets;
-        console.log(this.data);
+  // getData(): void {
+  //   this.httpClient.get('https://random-data-api.com/api/appliance/random_appliance?size=10')
+  //     .subscribe((res: any) => {
+  //       let temp: any[] = [];
+  //       let sheets: string[] = [];
+  //       temp.push(Object.keys(res[0]));
+  //       for (let r of res) {
+  //         temp.push(Object.values(r));
+  //         if (!sheets.includes(r['brand'])) {
+  //           sheets.push(r['brand'])
+  //         }
+  //       }
+  //       this.data['Sheet_1'] = temp;
+  //       // this.sheetNames = sheets;
+  //       console.log(this.data);
 
-        this.isFetched = true;
-      })
-  }
+  //       this.isFetched = true;
+  //     })
+  // }
 
   onSave(event: any) {
-    this.data['Sheet_1'] = event.data;
+    console.log(event);
+    this.data[event.sheet] = event.data;
     this.comments = event.comments;
   }
 
@@ -60,20 +61,23 @@ export class NormalExcelModificationComponent {
       const wb: XLSX.WorkBook = XLSX.read(bstr, { type: 'binary' });
 
       // Get the first sheet
-      const wsname: string = wb.SheetNames[0];
-      const ws: XLSX.WorkSheet = wb.Sheets[wsname];
-
-      // Convert the sheet to JSON
-      const data = <any[][]>XLSX.utils.sheet_to_json(ws, { header: 1 });
       this.data = [];
-      this.data['Sheet_1'] = data;
-      this.isFetched = true;
-      this.excelLoaded = true
 
-      // Extract comments
-      // const comments = this.extractComments(wb);
-      // this.comments = comments;
-      // console.log(this.comments);
+      if (wb.SheetNames.length > 0) {
+
+        wb.SheetNames.forEach(sheetName => {
+          const wsname: string = sheetName;
+          const ws: XLSX.WorkSheet = wb.Sheets[wsname];
+
+          const data = <any[][]>XLSX.utils.sheet_to_json(ws, { header: 1 });
+          this.data[sheetName] = data;
+          this.sheetNames.push(sheetName);
+        });
+
+        console.log(this.data);
+        this.isFetched = true;
+        this.excelLoaded = true
+      }
     };
     reader.readAsBinaryString(target.files[0]);
   }
@@ -138,33 +142,33 @@ export class NormalExcelModificationComponent {
     this.isEditing = false;
   }
 
-  handleUploadFile() { }
-
   handleDownload() {
 
-    if (!this.data['Sheet_1']) return;
+    if (!this.data) return;
 
     this.eventEmitter.next({ id: 'Source', type: 'save' });
-    const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(this.data['Sheet_1']);
+    const sheetNames = Object.keys(this.data);
 
-    if (ws) {
+    let wb: XLSX.WorkBook = XLSX.utils.book_new();
 
-      for (let comment of this.comments) {
-        const cellAddress = this.getColumnLetter(comment.xPosition) + (comment.yPosition + 1); // Convert to 1-based index for row
+    sheetNames.forEach(((sheetName: any) => {
 
-        if (!ws[cellAddress]) ws[cellAddress] = {}; // Create cell if it does not exist
-        if (!ws[cellAddress].c) ws[cellAddress].c = []; // Initialize comments array if it does not exist
+      const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(this.data[sheetName]);
+      XLSX.utils.book_append_sheet(wb, ws, sheetName);
 
-        ws[cellAddress].c.push({
-          a: "Shemil", // Author
-          t: comment.comment // Text of the comment
-        });
+      if (ws) {
+
+        for (let comment of this.comments[sheetName]) {
+          const cellAddress = this.getColumnLetter(comment.xPosition) + (comment.yPosition + 1); // Convert to 1-based index for row
+
+          if (!ws[cellAddress]) ws[cellAddress] = {}; // Create cell if it does not exist
+          if (!ws[cellAddress].c) ws[cellAddress].c = []; // Initialize comments array if it does not exist
+
+          ws[cellAddress].c.push({ a: "Shemil", t: comment.comment });
+        }
       }
-      // ws.A1.c.push({a:"SheetJS", t:"I'm a little comment, short and stout!"});
-    }
+    }));
 
-    const wb: XLSX.WorkBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Sheet_1');
     XLSX.writeFile(wb, 'example.xlsx');
   }
 
@@ -180,4 +184,6 @@ export class NormalExcelModificationComponent {
     return letter;
   };
 
+
+  handleUploadFile() { }
 }
