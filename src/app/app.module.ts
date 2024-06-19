@@ -11,13 +11,20 @@ import { TestComponentComponent } from './test-component/test-component.componen
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'; // Import HttpClientModule
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
+import { CommentListDialogComponent } from './comments-list-dialog/comments-list-dialog.component';
+import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
+import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
   declarations: [
     AppComponent,
     MicrosoftExcelModificationComponent,
     NormalExcelModificationComponent,
-    TestComponentComponent
+    TestComponentComponent,
+    CommentListDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -26,7 +33,13 @@ import { MatIconModule } from '@angular/material/icon';
     HttpClientModule,
     BrowserAnimationsModule,
     MatTooltipModule,
-    MatIconModule
+    MatIconModule,
+    MatTooltipModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    FormsModule,
+    MatInputModule,
+    MatButtonModule
   ],
   providers: [],
   bootstrap: [AppComponent]

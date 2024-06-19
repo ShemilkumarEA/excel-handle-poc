@@ -2,12 +2,16 @@ import { Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output
 import { MatDialog } from '@angular/material/dialog';
 import { BehaviorSubject } from 'rxjs';
 import { CommentDialogComponent } from './dialog/comment-dialog.component';
+import { CommentListDialogComponent } from './comments-list-dialog/comments-list-dialog.component';
 
 interface Comment {
+  author: string;
   comment: string | null,
   id: string,
   xPosition: number,
-  yPosition: number
+  yPosition: number,
+  date: Date;
+  cell: string,
 }
 
 
@@ -52,6 +56,7 @@ export class NgxExcelViewerComponent implements OnInit, OnChanges {
     if (this.events != null) {
       this.events.subscribe(event => {
         if (event.id == this.id) {
+          if (event.type == "comments") this.openCommentsDialog();
           if (event.type == "cancel") {
             this.sheetData = JSON.parse(JSON.stringify(this.backupSheetData));
             this.isSheetDataChanged = false;
@@ -156,7 +161,7 @@ export class NgxExcelViewerComponent implements OnInit, OnChanges {
 
   selectCell(i: number, j: number) {
     if ((this.selectedCellIndices[0] == i && this.selectedCellIndices[1] == j) || (i > this.sheetData.length - 1 || j > this.maxOfColumns - 1)) {
-      (document.querySelector(`#input-${this.selectedCellIndices[0]}-${this.selectedCellIndices[1]}`) as any).focus()
+      (document.querySelector(`#input-${this.selectedCellIndices[0]}-${this.selectedCellIndices[1]}`) as any)?.focus()
       return;
     }
     i = i >= 0 ? i : 0;
@@ -236,8 +241,20 @@ export class NgxExcelViewerComponent implements OnInit, OnChanges {
 
     dialogRef.afterClosed().subscribe(comment => {
       if (comment) {
-        if (!this.comments[this.currentSheetName]) this.comments[this.currentSheetName] = []
-        this.comments[this.currentSheetName].push({ comment, id: "AAA", xPosition: x, yPosition: y })
+        const cellAddress = this.getColumnLetter(x) + (y + 1); // Convert to 1-based index for row
+
+        if (!this.comments[this.currentSheetName]) this.comments[this.currentSheetName] = [];
+        this.comments[this.currentSheetName].push(
+          {
+            author: "Shemilkumar",
+            comment: comment,
+            id: "AAA",
+            xPosition: x,
+            yPosition: y,
+            date: new Date(),
+            cell: cellAddress
+          }
+        )
       }
     });
   }
@@ -260,4 +277,30 @@ export class NgxExcelViewerComponent implements OnInit, OnChanges {
 
     return ''
   }
+
+  openCommentsDialog() {
+    this.selectedCellIndices = [-1, -1];
+    const dialogRef = this.dialog.open(CommentListDialogComponent, {
+      width: '550px',
+      maxHeight: '75vh',
+      data: { comments: this.comments, sheet: this.currentSheetName }
+    });
+
+    dialogRef.afterClosed().subscribe(response => {
+      if (response) {
+        this.selectedCellIndices = [response.yPosition, response.xPosition];
+        this.selectCell(response.yPosition, response.xPosition)
+      }
+    })
+  }
+
+  getColumnLetter(colIndex: number) {
+    let letter = '';
+    let tempIndex = colIndex;
+    while (tempIndex >= 0) {
+      letter = String.fromCharCode((tempIndex % 26) + 65) + letter;
+      tempIndex = Math.floor(tempIndex / 26) - 1;
+    }
+    return letter;
+  };
 }

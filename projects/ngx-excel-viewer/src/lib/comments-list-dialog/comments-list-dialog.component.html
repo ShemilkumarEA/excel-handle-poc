@@ -1,0 +1,18 @@
+<h2 mat-dialog-title>Comments</h2>
+<div class="comments no-scrollbar">
+
+    <!-- <div class="full-width comment-container">
+        <span class="comment-author">Shemilkumar E A</span>
+        <span class="comment-message">This is not correct</span>
+        <span class="comment-date">June 19, 2024 at 10:49</span>
+    </div> -->
+
+    <div *ngFor="let comment of allComments" class="full-width comment-container" (click)="sendBackComment(comment)">
+        <div class="flex justify-between items-center">
+            <span class="comment-author">{{comment.author}}</span>
+            <span class="comment-cell">{{comment.cell}}</span>
+        </div>
+        <span class="comment-message">{{comment.comment}}</span>
+        <span class="comment-date">{{formatDate(comment.date)}}</span>
+    </div>
+</div>

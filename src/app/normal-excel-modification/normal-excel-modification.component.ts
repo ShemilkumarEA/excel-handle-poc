@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import * as XLSX from 'xlsx';
 import { HttpClient } from '@angular/common/http'; // Import HttpClient
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-normal-excel-modification',
@@ -19,7 +20,7 @@ export class NormalExcelModificationComponent {
   sheetNames: string[] = [];
   comments: any;
 
-  constructor(public httpClient: HttpClient) { }
+  constructor(public httpClient: HttpClient, private dialog: MatDialog) { }
 
   ngOnInit(): void {
     // this.getData();
@@ -46,7 +47,6 @@ export class NormalExcelModificationComponent {
   // }
 
   onSave(event: any) {
-    console.log(event);
     this.data[event.sheet] = event.data;
     this.comments = event.comments;
   }
@@ -74,7 +74,6 @@ export class NormalExcelModificationComponent {
           this.sheetNames.push(sheetName);
         });
 
-        console.log(this.data);
         this.isFetched = true;
         this.excelLoaded = true
       }
@@ -159,7 +158,8 @@ export class NormalExcelModificationComponent {
       if (ws) {
 
         for (let comment of this.comments[sheetName]) {
-          const cellAddress = this.getColumnLetter(comment.xPosition) + (comment.yPosition + 1); // Convert to 1-based index for row
+          // const cellAddress = this.getColumnLetter(comment.xPosition) + (comment.yPosition + 1); // Convert to 1-based index for row
+          const cellAddress = comment.cell;
 
           if (!ws[cellAddress]) ws[cellAddress] = {}; // Create cell if it does not exist
           if (!ws[cellAddress].c) ws[cellAddress].c = []; // Initialize comments array if it does not exist
@@ -174,16 +174,14 @@ export class NormalExcelModificationComponent {
 
   onDownload(event: any) { }
 
-  getColumnLetter(colIndex: number) {
-    let letter = '';
-    let tempIndex = colIndex;
-    while (tempIndex >= 0) {
-      letter = String.fromCharCode((tempIndex % 26) + 65) + letter;
-      tempIndex = Math.floor(tempIndex / 26) - 1;
-    }
-    return letter;
-  };
+  openCommentsDialog() {
+    if (this.isFetched) this.eventEmitter.next({ id: 'Source', type: 'comments' });
 
+    // const dialogRef = this.dialog.open(CommentListDialogComponent, {
+    //   width: '550px',
+    //   maxHeight: '75vh',
+    // });
+  }
 
   handleUploadFile() { }
 }

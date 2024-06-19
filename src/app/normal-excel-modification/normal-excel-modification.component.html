@@ -19,6 +19,9 @@
         </div>
 
         <div class="input-container flex gap-2 items-end justify-end">
+            <button (click)="openCommentsDialog()" class="custom-button save-button flex items-center">
+                <span>Comments</span>
+            </button>
             <input type="file" (change)="onFileChange($event)" id="fileInput" class="file-input"
                 accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
             <label for="fileInput" class="file-input-label">Choose a file</label>
