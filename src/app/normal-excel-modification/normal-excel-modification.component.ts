@@ -18,7 +18,7 @@ export class NormalExcelModificationComponent {
   isEditing = false;
   excelLoaded: boolean = false;
   sheetNames: string[] = [];
-  comments: any;
+  comments: any = {};
 
   constructor(public httpClient: HttpClient, private dialog: MatDialog) { }
 
@@ -69,6 +69,8 @@ export class NormalExcelModificationComponent {
           const wsname: string = sheetName;
           const ws: XLSX.WorkSheet = wb.Sheets[wsname];
 
+          this.extractComments(ws, wsname);
+
           const data = <any[][]>XLSX.utils.sheet_to_json(ws, { header: 1 });
           this.data[sheetName] = data;
           this.sheetNames.push(sheetName);
@@ -81,40 +83,19 @@ export class NormalExcelModificationComponent {
     reader.readAsBinaryString(target.files[0]);
   }
 
-  extractComments(wb: XLSX.WorkBook): any {
-    const allData = wb.Sheets[wb.SheetNames[0]];
-    const comments: any = {};
+  extractComments(ws: XLSX.WorkSheet, sheet: string): any {
 
-    for (const [key, value] of Object.entries(allData)) {
-      // console.log(key, value);
-      if (value['c']) {
-        console.log(key, value['c'][0].t);
+    let commentsInSheet = [];
+    
+    for (let key in ws) {
+      if (ws[key]?.c) {
+        let commentMessage = ws[key]?.c[0]?.t;
+        const { colIndex, rowIndex } = this.getCellIndex(key)
+        commentsInSheet.push({ comment: commentMessage, author: "Shemilkumar", cell: key, date: new Date(), xPosition: colIndex, yPosition: rowIndex })
+        this.comments = { ...this.comments, [sheet]: commentsInSheet }
       }
     }
 
-    // for (let key in allData) {
-    //   if (allData.hasOwnProperty(key)) {
-    //     // console.log(key, allData[key]);
-    //     if (allData[key].hasOwnProperty('c')) {
-    //       console.log(key, allData[key].c[0].t);
-    //     }
-    //   }
-    // }
-
-    // wb.SheetNames.forEach(sheetName => {
-    //   const ws = wb.Sheets[sheetName];
-    //   comments[sheetName] = {};
-    //   if (ws && ws['!comments']) {
-    //     ws['!comments'].forEach((comment: any) => {
-    //       const cellAddress = comment.ref;
-    //       if (!comments[sheetName][cellAddress]) {
-    //         comments[sheetName][cellAddress] = [];
-    //       }
-    //       comments[sheetName][cellAddress].push(comment.t);
-    //     });
-    //   }
-    // });
-    return comments;
   }
 
   // onScroll(event: any): void {
@@ -183,5 +164,31 @@ export class NormalExcelModificationComponent {
     // });
   }
 
-  handleUploadFile() { }
+  getCellIndex(cellRef: any) {
+    let columnPart = '';
+    let rowPart = '';
+
+    // Separate the column letters and the row numbers
+    for (let i = 0; i < cellRef.length; i++) {
+      if (isNaN(cellRef[i])) {
+        columnPart += cellRef[i];
+      } else {
+        rowPart = cellRef.slice(i);
+        break;
+      }
+    }
+
+    // Convert column letters to index
+    let colIndex = 0;
+    for (let i = 0; i < columnPart.length; i++) {
+      colIndex = colIndex * 26 + (columnPart.charCodeAt(i) - 64);
+    }
+    colIndex--; // Adjust for 0-based index
+
+    // Convert row part to index (1-based to 0-based)
+    let rowIndex = parseInt(rowPart, 10) - 1;
+
+    return { colIndex, rowIndex };
+  }
+
 }

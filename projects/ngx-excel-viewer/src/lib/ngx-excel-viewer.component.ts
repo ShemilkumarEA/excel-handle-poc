@@ -27,6 +27,9 @@ export class NgxExcelViewerComponent implements OnInit, OnChanges {
   @Input() editable: boolean = false;
   @Input() events: BehaviorSubject<any> | null = null;
   @Input() saveDataOutput: "complete" | "edited-only" = "complete";
+
+  @Input() comments: { [key: string]: Comment[] } = {};
+
   @Output() onDataSave = new EventEmitter<any>();
   @Output() onScrollEnd = new EventEmitter<any>();
   public currentSheetName = "";
@@ -42,11 +45,11 @@ export class NgxExcelViewerComponent implements OnInit, OnChanges {
   private lastScrollTop = 0;
   public loading = false;
 
-  comments: { [key: string]: Comment[] } = {};
 
   constructor(private dialog: MatDialog) { }
 
   ngOnInit(): void {
+    console.log(this.comments);
     if (this.data != null) {
       this.currentSheetName = this.sheetNames[0];
       if (this.data[this.currentSheetName]) {

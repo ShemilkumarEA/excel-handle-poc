@@ -36,7 +36,7 @@
         <div class="viewer">
             <ngx-excel-viewer *ngIf="isFetched" [data]="data" [editable]="isEditing" id="Source"
                 saveDataOutput="complete" (onDataSave)="onSave($event)" [sheetNames]="sheetNames"
-                [events]="eventEmitter" (onDataDownload)="onDownload($event)"></ngx-excel-viewer>
+                [events]="eventEmitter" (onDataDownload)="onDownload($event)" [comments]="comments"></ngx-excel-viewer>
         </div>
     </div>
 
