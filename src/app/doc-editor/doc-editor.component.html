@@ -1,0 +1,12 @@
+<div class="flex w-full items-center justify-center pt-20">
+    <div class="flex flex-col justify-center w-[1000px]">
+        <angular-editor id="editor1" [(ngModel)]="htmlContent" [config]="config1" (ngModelChange)="onChange($event)"
+            (blur)="onBlur($event)">
+            <ng-template #customButtons let-executeCommandFn="executeCommandFn">
+            </ng-template>
+        </angular-editor>
+        <p class="html pt-4">
+            HTML Output: {{ htmlContent }}
+        </p>
+    </div>
+</div>

@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { NormalExcelModificationComponent } from './normal-excel-modification/normal-excel-modification.component';
 import { MicrosoftExcelModificationComponent } from './microsoft-excel-modification/microsoft-excel-modification.component';
-import { TestComponentComponent } from './test-component/test-component.component';
+import { DocEditorComponent } from './doc-editor/doc-editor.component';
 
 const routes: Routes = [
   {
@@ -14,8 +14,8 @@ const routes: Routes = [
     component: MicrosoftExcelModificationComponent
   },
   {
-    path: 'test',
-    component: TestComponentComponent
+    path: 'editor',
+    component: DocEditorComponent
   }
 ];
 

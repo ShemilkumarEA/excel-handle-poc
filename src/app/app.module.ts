@@ -17,6 +17,8 @@ import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDialogModule } from '@angular/material/dialog';
+import { DocEditorComponent } from './doc-editor/doc-editor.component';
+import { AngularEditorModule } from '@kolkov/angular-editor';
 
 @NgModule({
   declarations: [
@@ -24,7 +26,8 @@ import { MatDialogModule } from '@angular/material/dialog';
     MicrosoftExcelModificationComponent,
     NormalExcelModificationComponent,
     TestComponentComponent,
-    CommentListDialogComponent
+    CommentListDialogComponent,
+    DocEditorComponent
   ],
   imports: [
     BrowserModule,
@@ -39,7 +42,8 @@ import { MatDialogModule } from '@angular/material/dialog';
     MatFormFieldModule,
     FormsModule,
     MatInputModule,
-    MatButtonModule
+    MatButtonModule,
+    AngularEditorModule
   ],
   providers: [],
   bootstrap: [AppComponent]
